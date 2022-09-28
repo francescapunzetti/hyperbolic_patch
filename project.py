@@ -1,11 +1,13 @@
+from math import log2
 import numpy as np
 from PIL import Image, ImageOps
 from patchify import patchify
 from matplotlib import pyplot as plt
+import math
 
 #importing the initial image
 image = Image.open("images/image1.jpg")
-width = image.width
+original_width = image.width
 channels = 3
 image = np.asarray(image)
 
@@ -41,6 +43,7 @@ def hyperbolic_patch(image):
     step=64
     width= 64
     height = 64
+    patches_per_row = 4
     patches = patchify(image, (width, height, 3), step=step)
     for i in range(patches.shape[0]):
         for j in range(patches.shape[1]):
@@ -50,29 +53,29 @@ def hyperbolic_patch(image):
             patch.save(f"patch_{num+1}.jpg")
 
 ## rename all patches per row
-    for i in range(1,5):
+    for i in range(1,patches_per_row):
         patch = Image.open(f"patch_{i}.jpg")   
         patch.save(f"patch_1_{i}.jpg")
-    for i in range(1,5):
+    for i in range(1,patches_per_row):
         patch = Image.open(f"patch_{4+i}.jpg")
         patch.save(f"patch_2_{i}.jpg")
-    for i in range(1,5):
+    for i in range(1,patches_per_row):
         patch = Image.open(f"patch_{8+i}.jpg")
         patch.save(f"patch_3_{i}.jpg")
-    for i in range(1,5):
+    for i in range(1,patches_per_row):
         patch = Image.open(f"patch_{12+i}.jpg")
         patch.save(f"patch_4_{i}.jpg")
 
-    for j in range(1,5):
-        for i in range(1,5):
+    for j in range(1,patches_per_row):
+        for i in range(1,patches_per_row):
             image = Image.open(f"patch_{j}_{i}.jpg")
             height= int(step/(2**(j-1)))
             width = int(step/(2**(i-1)))
             image_resized = image.resize((width,height), resample=0, box=None, reducing_gap=None)
             image_resized.save(f"patch_res_{j}_{i}.jpg")
 
-    for j in range(1,5):
-        for i in range(1,5):
+    for j in range(1,patches_per_row):
+        for i in range(1,patches_per_row):
             image = Image.open(f"patch_res_{j}_{i}.jpg")
             if i == 1:
                 im1= image
@@ -111,7 +114,3 @@ def comparison(reference, final):
 hyperbolic_patch(image)
 final = Image.open("final.jpg")
 comparison(image, final)
-
-
-
-#create the patched
