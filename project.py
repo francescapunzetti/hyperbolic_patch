@@ -1,12 +1,18 @@
-from math import log2
 import numpy as np
 from PIL import Image, ImageOps
 from patchify import patchify
 from matplotlib import pyplot as plt
-import math
+from datetime import datetime
+import glob
+from natsort import natsorted
+import sys
+
 
 #importing the initial image
-image = Image.open("images/image1.jpg")
+image = Image.open("images/labrador.jpg")
+angle = sys.argv[1]
+angle = float(angle)
+image= image.rotate(angle, resample=0, expand=0, center=None, translate=None, fillcolor=None)
 original_width = image.width
 channels = 3
 image = np.asarray(image)
@@ -24,26 +30,39 @@ def concatenate_vert(im1, im2):
     col.paste(im2, (0, im1.height))
     return col
 
-def final_image():
-    quarter_right = Image.open("final.jpg")
-    quarter_left = ImageOps.flip(quarter_right)
-    quarter_left.save("quarter_left.jpg")
-    image = concatenate_vert(quarter_left, quarter_right)
-    image.save("half.jpg")
+#create the four angles 
+def create_corners(image):
+    step= (original_width //2)
+    width= (original_width //2)
+    height = (original_width //2)
+    patches = patchify(image, (width, height, 3), step=step)
+    for i in range(patches.shape[0]):
+        for j in range(patches.shape[1]):
+            patch = patches[i, j, 0]
+            patch = Image.fromarray(patch)
+            num = i * patches.shape[1] + j
+            patch.save(f"corner_{num+1}.jpg")
+    for i in range(1, 5):
+        patch = Image.open(f"corner_{i}.jpg")
+        if i == 1: 
+            corner = ImageOps.mirror(patch)
+            corner = ImageOps.flip(corner)
+            corner.save("images/upper_left.jpg")
+        if i==2: 
+            corner = ImageOps.flip(patch)
+            corner.save("images/upper_right.jpg")
+        if i==3:
+            corner = ImageOps.mirror(patch)
+            corner.save("images/bottom_left.jpg")  
 
-    half_right = Image.open("half.jpg")
-    half_left = ImageOps.mirror(half_right)
-    half_left.save("half_left.jpg")
-    image = concatenate_hor(half_left, half_right)
-    image.save("geometric_projection.jpg")
 
-####################
 #create the hyperbolic patch
 def hyperbolic_patch(image):
-    step=64
-    width= 64
-    height = 64
+    step=image.width//4
+    width= image.width//4
+    height = image.width//4
     patches_per_row = 4
+    image = np.asarray(image)
     patches = patchify(image, (width, height, 3), step=step)
     for i in range(patches.shape[0]):
         for j in range(patches.shape[1]):
@@ -53,29 +72,29 @@ def hyperbolic_patch(image):
             patch.save(f"patch_{num+1}.jpg")
 
 ## rename all patches per row
-    for i in range(1,patches_per_row):
+    for i in range(1,patches_per_row+1):
         patch = Image.open(f"patch_{i}.jpg")   
         patch.save(f"patch_1_{i}.jpg")
-    for i in range(1,patches_per_row):
+    for i in range(1,patches_per_row+1):
         patch = Image.open(f"patch_{4+i}.jpg")
         patch.save(f"patch_2_{i}.jpg")
-    for i in range(1,patches_per_row):
+    for i in range(1,patches_per_row+1):
         patch = Image.open(f"patch_{8+i}.jpg")
         patch.save(f"patch_3_{i}.jpg")
-    for i in range(1,patches_per_row):
+    for i in range(1,patches_per_row+1):
         patch = Image.open(f"patch_{12+i}.jpg")
         patch.save(f"patch_4_{i}.jpg")
 
-    for j in range(1,patches_per_row):
-        for i in range(1,patches_per_row):
+    for j in range(1,patches_per_row+1):
+        for i in range(1,patches_per_row+1):
             image = Image.open(f"patch_{j}_{i}.jpg")
             height= int(step/(2**(j-1)))
             width = int(step/(2**(i-1)))
             image_resized = image.resize((width,height), resample=0, box=None, reducing_gap=None)
             image_resized.save(f"patch_res_{j}_{i}.jpg")
 
-    for j in range(1,patches_per_row):
-        for i in range(1,patches_per_row):
+    for j in range(1,patches_per_row+1):
+        for i in range(1,patches_per_row+1):
             image = Image.open(f"patch_res_{j}_{i}.jpg")
             if i == 1:
                 im1= image
@@ -97,20 +116,69 @@ def hyperbolic_patch(image):
     row12=concatenate_vert(row1,row2)
     row123 = concatenate_vert(row12, row3)
     final = concatenate_vert(row123, row4)
-    final.save("final.jpg")
+    now = datetime.now()
+    now = now.strftime("%-I%-M%-S%f")
+    image_name = "final"+str(now)+".jpg"
+    final.save(image_name)
     return final
 
 #showing the differences between the original image and the generated
 def comparison(reference, final):
     fig = plt.figure(figsize=(10, 7))
-    fig.add_subplot(1, 2, 1) #in first position 
+    fig.add_subplot(2, 2, 1) #in first position 
     plt.imshow(reference)
     plt.title("Reference")
     fig.add_subplot(1, 2, 2) #in second position 
     plt.imshow(final)
-    plt.title("Hyperbolic patch")
+    plt.title("Hyperbolic patch 15°")
     plt.show()
 
-hyperbolic_patch(image)
-final = Image.open("final.jpg")
+create_corners(image)
+
+u_left = Image.open("images/upper_left.jpg")
+u_right = Image.open("images/upper_right.jpg")
+b_left = Image.open("images/bottom_left.jpg")
+b_right = Image.open("corner_4.jpg")
+hyperbolic_patch(u_left)
+hyperbolic_patch(u_right)
+hyperbolic_patch(b_left)
+hyperbolic_patch(b_right)
+
+
+images = glob.glob("final*")
+images = natsorted(images)
+i = 0
+for image in images: 
+    with open(image, 'rb') as file:
+        img = Image.open(file)
+        corner = img.copy()
+        corner.save("corner_res_"+str(i+1)+".jpg")
+        i = i +1 
+
+
+
+u_left = Image.open("corner_res_1.jpg")
+u_left = ImageOps.mirror(u_left)
+u_left = ImageOps.flip(u_left)
+u_left.save("corner_res_1.jpg")
+u_left = Image.open("corner_res_1.jpg")
+###ok
+u_right = Image.open("corner_res_2.jpg")
+u_right = ImageOps.flip(u_right)
+u_right.save("corner_res_2.jpg")
+u_right= Image.open("corner_res_2.jpg")
+##
+b_left = Image.open("corner_res_3.jpg")
+b_left = ImageOps.mirror(b_left)
+b_left.save("corner_res_3.jpg")
+b_left = Image.open("corner_res_3.jpg")
+##ok
+b_right = Image.open("corner_res_4.jpg")
+up =concatenate_hor(u_left,u_right)
+bottom = concatenate_hor(b_left, b_right)
+final_image = concatenate_vert(up, bottom)
+final_image.save("images/final_image.jpg")
+final = Image.open("images/final_image.jpg")
+
+image = Image.open("images/labrador.jpg")
 comparison(image, final)
