@@ -122,6 +122,38 @@ def hyperbolic_patch(image):
     final.save(image_name)
     return final
 
+def result_image():
+    images = glob.glob("final*")
+    images = natsorted(images)
+    i = 0
+    for image in images: 
+        with open(image, 'rb') as file:
+            img = Image.open(file)
+            corner = img.copy()
+            corner.save("corner_res_"+str(i+1)+".jpg")
+            i = i +1 
+    u_left = Image.open("corner_res_1.jpg")
+    u_left = ImageOps.mirror(u_left)
+    u_left = ImageOps.flip(u_left)
+    u_left.save("corner_res_1.jpg")
+    u_left = Image.open("corner_res_1.jpg")
+###ok
+    u_right = Image.open("corner_res_2.jpg")
+    u_right = ImageOps.flip(u_right)
+    u_right.save("corner_res_2.jpg")
+    u_right= Image.open("corner_res_2.jpg")
+##
+    b_left = Image.open("corner_res_3.jpg")
+    b_left = ImageOps.mirror(b_left)
+    b_left.save("corner_res_3.jpg")
+    b_left = Image.open("corner_res_3.jpg")
+##ok
+    b_right = Image.open("corner_res_4.jpg")
+    up =concatenate_hor(u_left,u_right)
+    bottom = concatenate_hor(b_left, b_right)
+    final_image = concatenate_vert(up, bottom)
+    final_image.save("images/final_image" +str(angle)+".jpg")
+
 #showing the differences between the original image and the generated
 def comparison(reference, final):
     fig = plt.figure(figsize=(10, 7))
@@ -144,41 +176,7 @@ hyperbolic_patch(u_right)
 hyperbolic_patch(b_left)
 hyperbolic_patch(b_right)
 
-
-images = glob.glob("final*")
-images = natsorted(images)
-i = 0
-for image in images: 
-    with open(image, 'rb') as file:
-        img = Image.open(file)
-        corner = img.copy()
-        corner.save("corner_res_"+str(i+1)+".jpg")
-        i = i +1 
-
-
-
-u_left = Image.open("corner_res_1.jpg")
-u_left = ImageOps.mirror(u_left)
-u_left = ImageOps.flip(u_left)
-u_left.save("corner_res_1.jpg")
-u_left = Image.open("corner_res_1.jpg")
-###ok
-u_right = Image.open("corner_res_2.jpg")
-u_right = ImageOps.flip(u_right)
-u_right.save("corner_res_2.jpg")
-u_right= Image.open("corner_res_2.jpg")
-##
-b_left = Image.open("corner_res_3.jpg")
-b_left = ImageOps.mirror(b_left)
-b_left.save("corner_res_3.jpg")
-b_left = Image.open("corner_res_3.jpg")
-##ok
-b_right = Image.open("corner_res_4.jpg")
-up =concatenate_hor(u_left,u_right)
-bottom = concatenate_hor(b_left, b_right)
-final_image = concatenate_vert(up, bottom)
-final_image.save("images/final_image" +str(angle)+".jpg")
+result_image()
 final = Image.open("images/final_image" +str(angle)+".jpg")
-
 image = Image.open("images/labrador.jpg")
 comparison(image, final)
