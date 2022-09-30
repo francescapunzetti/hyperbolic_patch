@@ -10,8 +10,8 @@ import sys
 
 #importing the initial image
 image = Image.open("images/labrador.jpg")
-angle = sys.argv[1]
-angle = float(angle)
+#angle = sys.argv[1]
+angle = float(0)
 image= image.rotate(angle, resample=0, expand=0, center=None, translate=None, fillcolor=None)
 original_width = image.width
 channels = 3
@@ -130,7 +130,7 @@ def comparison(reference, final):
     plt.title("Reference")
     fig.add_subplot(1, 2, 2) #in second position 
     plt.imshow(final)
-    plt.title("Hyperbolic patch 15°")
+    plt.title("Hyperbolic patch"+ str(angle))
     plt.show()
 
 create_corners(image)
@@ -177,8 +177,8 @@ b_right = Image.open("corner_res_4.jpg")
 up =concatenate_hor(u_left,u_right)
 bottom = concatenate_hor(b_left, b_right)
 final_image = concatenate_vert(up, bottom)
-final_image.save("images/final_image.jpg")
-final = Image.open("images/final_image.jpg")
+final_image.save("images/final_image" +str(angle)+".jpg")
+final = Image.open("images/final_image" +str(angle)+".jpg")
 
 image = Image.open("images/labrador.jpg")
 comparison(image, final)
