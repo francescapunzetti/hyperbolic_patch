@@ -9,7 +9,7 @@ import sys
 
 
 #importing the initial image
-image = Image.open("images/labrador.jpg")
+image = Image.open("images/histo.jpg")
 #angle = sys.argv[1]
 angle = float(0)
 image= image.rotate(angle, resample=0, expand=0, center=None, translate=None, fillcolor=None)
@@ -47,13 +47,13 @@ def create_corners(image):
         if i == 1: 
             corner = ImageOps.mirror(patch)
             corner = ImageOps.flip(corner)
-            corner.save("images/upper_left.jpg")
+            corner.save("upper_left.jpg")
         if i==2: 
             corner = ImageOps.flip(patch)
-            corner.save("images/upper_right.jpg")
+            corner.save("upper_right.jpg")
         if i==3:
             corner = ImageOps.mirror(patch)
-            corner.save("images/bottom_left.jpg")  
+            corner.save("bottom_left.jpg")  
 
 
 #create the hyperbolic patch
@@ -156,20 +156,20 @@ def result_image():
 
 #showing the differences between the original image and the generated
 def comparison(reference, final):
-    fig = plt.figure(figsize=(10, 7))
+    fig = plt.figure(figsize=(10, 10))
     fig.add_subplot(2, 2, 1) #in first position 
     plt.imshow(reference)
     plt.title("Reference")
-    fig.add_subplot(1, 2, 2) #in second position 
+    fig.add_subplot(2, 2, 2) #in second position 
     plt.imshow(final)
     plt.title("Hyperbolic patch"+ str(angle))
     plt.show()
 
 create_corners(image)
 
-u_left = Image.open("images/upper_left.jpg")
-u_right = Image.open("images/upper_right.jpg")
-b_left = Image.open("images/bottom_left.jpg")
+u_left = Image.open("upper_left.jpg")
+u_right = Image.open("upper_right.jpg")
+b_left = Image.open("bottom_left.jpg")
 b_right = Image.open("corner_4.jpg")
 hyperbolic_patch(u_left)
 hyperbolic_patch(u_right)
@@ -178,5 +178,5 @@ hyperbolic_patch(b_right)
 
 result_image()
 final = Image.open("images/final_image" +str(angle)+".jpg")
-image = Image.open("images/labrador.jpg")
+image = Image.open("images/histo.jpg")
 comparison(image, final)
