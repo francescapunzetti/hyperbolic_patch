@@ -1,0 +1,8 @@
+numpy
+pillow
+patchify
+matplotlib
+datetime
+glob
+natsort
+sys
