@@ -16,3 +16,30 @@ Here's some examples with a general image at different angles of rotation:
 <div align='center'>
 <img src="https://i.ibb.co/KKdQBTw/Hyperbolic-patches.png" alt="mid" border="0">
 </div>
+
+## Table of contents
+
+ - `images`
+ - `.gitignore`
+ - `project.py`
+ - `test_project.py`
+ - `requirements.txt`
+
+The folder `images`  contains the images used as input and some output examples
+
+Into `.gitignore` contains all files we don't want to track. 
+
+`project.py` is the main script for the project.
+
+`test_project.py` is the script used for the testing. 
+
+At the end `requirements.txt` contains packages that must be installed for the the project.
+
+## Installation 
+ To install the packages usefull for the project clone the repository and use pip: 
+ ```
+git clone https://github.com/francescapunzetti/project.git
+cd project
+pip install -r requirements.txt
+```
+In this way the whole repository in cloned.
