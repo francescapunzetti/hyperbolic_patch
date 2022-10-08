@@ -17,7 +17,7 @@ def test_concatenate_hor():
     """
     GIVEN: two image with the same height
     WHEN: apply to the concatenate_hor function
-    THEN: the output is an image with dimensions (w1+w2,h)
+    THEN: pass when the output is an image with dimensions (w1+w2,h)
     """
 
     img= concatenate_hor(image, image)
@@ -28,7 +28,7 @@ def test_concatenate_vert():
     """
     GIVEN: two image with the same width
     WHEN: apply to the concatenate_vert function
-    THEN: the output is an image with dimensions (w, h1+h2)
+    THEN: pass when the output is an image with dimensions (w, h1+h2)
     """
 
     img= concatenate_vert(image, image)
@@ -39,7 +39,7 @@ def test_create_corners():
     """
     GIVEN: a squared image into array form
     WHEN: apply the create_corner function to it 
-    THEN: the output is the input image split in 4 images with same dimensions
+    THEN: pass when the output is the input image split in 4 images with same dimensions
     """
     img = Image.open("images/labrador.jpg")
     img = np.asarray(img)
@@ -55,7 +55,7 @@ def test_hyperbolic_patch():
     """
     GIVEN: an image
     WHEN: apply the hyperbolic_patch function to it 
-    THEN: the output are patches of the original image that scale with the factor 1/(2**(n-1)) 
+    THEN: pass when the output are patches of the original image that scale with the factor 1/(2**(n-1)) 
     """
     hyperbolic_patch(image)
     for j in range(1,patches_per_row+1):
@@ -71,7 +71,7 @@ def test_result_image():
     """
     GIVEN: the output of the 
     WHEN: apply the creat_corner function to it 
-    THEN: the output is the input image split in 4 images with same dimensions
+    THEN: pass when the output is the input image split in 4 images with same dimensions
     """
     img = Image.open("images/final_image" +str(angle)+ ".jpg")
     assert img.width < image.width

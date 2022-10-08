@@ -8,35 +8,38 @@ from natsort import natsorted
 import sys
 
 
-#importing the initial image
+#SETTING PARAMETERS: 
 
-image = Image.open("images/labrador.jpg")
+#Importing the input image.
+#It must be a squared image.
+image = Image.open("images/labrador.jpg") 
+
+#Setting the angle of rotation of the input image 
 #angle = float(sys.argv[1])
-angle = float(0)
-image= image.rotate(angle, resample=0, expand=0, center=None, translate=None, fillcolor=None)
+angle = float(0) 
+image= image.rotate(angle, resample=0, expand=0)
+
+#Saving the original dimensions for the following functions
 original_width = image.width
-channels = 3
-image = np.asarray(image)
 
 
-#stack together the resized patches in both directions
-def concatenate_hor(im1, im2):
-    row = Image.new('RGB', (im1.width + im2.width, im1.height))
-    row.paste(im1, (0, 0))
-    row.paste(im2, (im1.width, 0))
-    return row
+def create_corners(image, original_width):
+    """
+    Arguments: 
+    image = input image which suold be diveded in quarters;
+    original_width = dimension of the image (it must be squared). 
 
-def concatenate_vert(im1, im2):
-    col = Image.new('RGB', (im1.width, im1.height + im2.height))
-    col.paste(im1, (0, 0))
-    col.paste(im2, (0, im1.height))
-    return col
+    This function divides a squared image into quartes, alias 
+    splitting the image into 4 identical part. 
 
-#create the four angles 
-def create_corners(image):
+    All of them are flipped in order to have the center of 
+    the image in the upper- left corner.
+    """
+
     step= (original_width //2)
     width= (original_width //2)
     height = (original_width //2)
+    image = np.asarray(image)
     patches = patchify(image, (width, height, 3), step=step)
     for i in range(patches.shape[0]):
         for j in range(patches.shape[1]):
@@ -57,9 +60,51 @@ def create_corners(image):
             corner = ImageOps.mirror(patch)
             corner.save("bottom_left.jpg")  
 
+#To stack together all the resized patches: 
+
+def concatenate_hor(im1, im2):
+    """
+    Arguments:
+    im1, im2 = images to be stack together in the horizontal direction.
+    
+    The two images can have whatever dimensions.
+    The function return an image with dimension (w1+w2, h1).
+    The images will be stack in the writing order.
+    """
+    row = Image.new('RGB', (im1.width + im2.width, im1.height))
+    row.paste(im1, (0, 0))
+    row.paste(im2, (im1.width, 0))
+    return row
+
+def concatenate_vert(im1, im2):
+    """
+    Arguments:
+    im1, im2 = images to be stack together in the vertical direction.
+
+    The two images can have whatever dimensions. 
+    The function return an image with dimension (w1, h1+h2).
+    The images will be stack in the writing order.
+    """
+    col = Image.new('RGB', (im1.width, im1.height + im2.height))
+    col.paste(im1, (0, 0))
+    col.paste(im2, (0, im1.height))
+    return col
+
 
 #create the hyperbolic patch
 def hyperbolic_patch(image):
+    """
+    Argument:
+    image = input image whose want to make an hyperbolic compression.
+    
+    This patchify the input image in 16 patches. Then for each of them 
+    is performed and hyperbolic compression of the (w,h) of a factor
+    1/(2**(n-1)). n depends on the distance from the first patch
+    in the upper-left corner, which mantain the same dimensions. 
+    n can be separated in i for the columns and j for the row. 
+    After the resized all the patches are stacked back together. 
+    The output is an RGB image with an hyperbolic compression.
+    """
     step=image.width//4
     width= image.width//4
     height = image.width//4
@@ -92,7 +137,7 @@ def hyperbolic_patch(image):
             image = Image.open(f"patch_{j}_{i}.jpg")
             height= int(step/(2**(j-1)))
             width = int(step/(2**(i-1)))
-            image_resized = image.resize((width,height), resample=0, box=None, reducing_gap=None)
+            image_resized = image.resize((width,height), resample=0, reducing_gap=None)
             image_resized.save(f"patch_res_{j}_{i}.jpg")
 
     for j in range(1,patches_per_row+1):
@@ -117,15 +162,25 @@ def hyperbolic_patch(image):
     row4 = Image.open("row_4.jpg")
     row12=concatenate_vert(row1,row2)
     row123 = concatenate_vert(row12, row3)
-    final = concatenate_vert(row123, row4)
+    hyperbolic_corner = concatenate_vert(row123, row4)
     now = datetime.now()
     now = now.strftime("%-I%-M%-S%f")
-    image_name = "final"+str(now)+".jpg"
-    final.save(image_name)
-    return final
+    image_name = "hyperbolic_corner"+str(now)+".jpg"
+    hyperbolic_corner.save(image_name)
+    return hyperbolic_corner
 
 def result_image():
-    images = glob.glob("final*")
+    """
+    This function recompose the compressed quarters of the input 
+    image and the output is the original image with an hyperbolic 
+    compression. 
+
+    It sorts the outputs from the function hyperbolic_patch 
+    and rename them in function of the position of the corners. 
+    Then it flips them as in origin and stack together to obtain
+    the final image
+    """
+    images = glob.glob("hyperbolic_corner*")
     images = natsorted(images)
     i = 0
     for image in images: 
@@ -139,7 +194,7 @@ def result_image():
     u_left = ImageOps.flip(u_left)
     u_left.save("corner_res_1.jpg")
     u_left = Image.open("corner_res_1.jpg")
-###ok
+###
     u_right = Image.open("corner_res_2.jpg")
     u_right = ImageOps.flip(u_right)
     u_right.save("corner_res_2.jpg")
@@ -149,7 +204,7 @@ def result_image():
     b_left = ImageOps.mirror(b_left)
     b_left.save("corner_res_3.jpg")
     b_left = Image.open("corner_res_3.jpg")
-##ok
+##
     b_right = Image.open("corner_res_4.jpg")
     up =concatenate_hor(u_left,u_right)
     bottom = concatenate_hor(b_left, b_right)
@@ -158,6 +213,13 @@ def result_image():
 
 #showing the differences between the original image and the generated
 def comparison(reference, final):
+    """
+    Arguments: 
+    reference: input image
+    final: output image
+    This function plots the two images side by side
+    """
+    #no test needed because it's a visualization function 
     fig = plt.figure(figsize=(10, 10))
     fig.add_subplot(2, 2, 1) #in first position 
     plt.imshow(reference)
@@ -167,18 +229,17 @@ def comparison(reference, final):
     plt.title("Hyperbolic patch"+ str(angle))
     plt.show()
 
-create_corners(image)
 
-u_left = Image.open("upper_left.jpg")
-u_right = Image.open("upper_right.jpg")
-b_left = Image.open("bottom_left.jpg")
+create_corners(image, original_width)
+
+u_left = Image.open("upper_left.jpg")   #u = upper
+u_right = Image.open("upper_right.jpg") 
+b_left = Image.open("bottom_left.jpg") #b = bottom 
 b_right = Image.open("corner_4.jpg")
 hyperbolic_patch(u_left)
 hyperbolic_patch(u_right)
 hyperbolic_patch(b_left)
 hyperbolic_patch(b_right)
-
 result_image()
 final = Image.open("images/final_image" +str(angle)+".jpg")
-image = Image.open("images/histo.jpg")
 comparison(image, final)
