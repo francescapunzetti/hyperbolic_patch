@@ -9,13 +9,15 @@ import sys
 
 
 #importing the initial image
-image = Image.open("images/histo.jpg")
-#angle = sys.argv[1]
+
+image = Image.open("images/labrador.jpg")
+#angle = float(sys.argv[1])
 angle = float(0)
 image= image.rotate(angle, resample=0, expand=0, center=None, translate=None, fillcolor=None)
 original_width = image.width
 channels = 3
 image = np.asarray(image)
+
 
 #stack together the resized patches in both directions
 def concatenate_hor(im1, im2):
