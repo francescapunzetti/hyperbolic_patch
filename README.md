@@ -13,16 +13,10 @@ The solution consists into divid the original image in subsection; the center of
 
 This scaling takes into account both direction:
 
-  
-
 $$\begin{cases}
-
 height' = \frac{height}{2^{j-1}}\\
-
 \\ width' = \frac{width}{2^{i-1}}
-
 \end{cases}$$
-
   
 
 The result image is compressed, but the center of the image, hypotetically where there are insterresting informations, has still a good resolution, while as you go far from the core the spatial resolution decrease as a power of 2.
