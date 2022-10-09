@@ -91,7 +91,7 @@ Then at the beginning of the script you can set the input:
 
 And if you want to perform a rotation of the input image: 
 
-    angle = float(10) #inster 0 if you don't want rotation 
+    angle = float(10) #insert 0 if you don't want rotation 
 
 Then all parameters are set and you can compile the script. 
 All images to obtain the patches will be saved in the main folder, and will be overwrite if you decide to perform the program multiple times. 
