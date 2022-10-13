@@ -1,4 +1,4 @@
-from project import concatenate_hor, concatenate_vert, create_corners, hyperbolic_patch, result_image, comparison
+from project import concatenate_hor, concatenate_vert, create_corners, hyperbolic_patch, center_patch, comparison
 import numpy as np
 from PIL import Image, ImageOps
 from patchify import patchify
@@ -10,6 +10,7 @@ import sys
 from unittest.mock import patch
 
 image = Image.open("images/labrador.jpg")
+original_width = image.width
 angle= 0.0
 
 def test_concatenate_hor(): 
@@ -43,7 +44,7 @@ def test_create_corners():
     """
     img = Image.open("images/labrador.jpg")
     img = np.asarray(img)
-    create_corners(img)
+    create_corners(img, original_width)
     for i in range(1, 5):
         patch = Image.open(f"corner_{i}.jpg")
         assert patch.width == image.width // 2

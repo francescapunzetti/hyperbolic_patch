@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from datetime import datetime
 import glob
 from natsort import natsorted
-import sys
+import os
 
 
 #SETTING PARAMETERS: 
@@ -18,7 +18,7 @@ image_name = "histo"
 image = Im.open("images/" + str(image_name)+".jpg") 
 
 #To perform hyperbolic patches at different rotations
-angle = float(45) #choose angle of rotation 
+angle = float(0) #choose angle of rotation 
 image= image.rotate(angle, resample=0, expand=0)
 
 #Saving the original dimensions for the following functions
@@ -181,7 +181,7 @@ def hyperbolic_patch(
     hyperbolic_corner.save(image_name)
     return hyperbolic_corner
 
-def result_image():
+def center_patch():
     """
     This function recompose the compressed quarters of the input 
     image and the output is the original image with an hyperbolic 
@@ -199,9 +199,9 @@ def result_image():
     i = 0
     for image in images: 
         with open(image, 'rb') as file:
-            img = Im.open(file)
-            corner = img.copy()
-            corner.save("corner_res_"+str(i+1)+".jpg") #rename corners to simplify recognition 
+            old_name = image
+            new_name = "corner_res_"+str(i+1)+".jpg" #rename corners to simplify recognition 
+            os.rename(old_name, new_name)
             i = i +1 
 #flipping the quarters as in origin
     u_left = Im.open("corner_res_1.jpg")
@@ -227,38 +227,106 @@ def result_image():
     final_image = concatenate_vert(up, bottom)
     final_image.save("images/final_image_" +str(image_name)+str(angle)+".jpg")
 
+
+def flip_patch(): 
+    """
+    This function reorders, renames and flips the output images 
+    in function of the focus location, in order to recognize the images.  
+    """
+    images = glob.glob("hyperbolic_corner*")
+    images = sorted(images)
+    i = 0
+    for image in images: 
+        with open(image, 'rb') as file:
+            old_name = image
+            if i== 0:
+                new_name = "images/u_l_patch" +str(image_name)+ str(angle) +".jpg"  
+                os.rename(old_name, new_name)
+            if i== 1:
+                new_name = "images/d_l_patch" +str(image_name)+ str(angle) +".jpg"  
+                os.rename(old_name, new_name)
+                img = Im.open(new_name)
+                img = ImO.flip(img)
+                img.save(new_name)
+            if i== 2:
+                new_name = "images/u_r_patch" +str(image_name)+ str(angle) +".jpg"   
+                os.rename(old_name, new_name)
+                img = Im.open(new_name)
+                img = ImO.mirror(img)
+                img.save(new_name)
+            if i== 3:
+                new_name = "images/d_r_patch" +str(image_name)+ str(angle) +".jpg"   
+                os.rename(old_name, new_name)
+                img = Im.open(new_name)
+                img = ImO.mirror(img)
+                img = ImO.flip(img)
+                img.save(new_name)
+        i = i +1 
+
 def comparison(
     reference: Image,
-    final: Image) -> Image: 
+    img1: Image,
+    img2: Image,
+    img3: Image,
+    img4: Image,
+    img5: Image) -> Image: 
+   
     """
     Arguments: 
     reference: input image
-    final: output image
-    This function plots the two images side by side
+    final, im1, im2, im3, im4, im5: output images
+    This function plots the images side by side
     """
     #no test needed because it's a visualization function 
-    fig = plt.figure(figsize=(10, 10))
-    fig.add_subplot(2, 2, 1) #in first position 
+    fig = plt.figure(figsize=(20, 20))
+    fig.add_subplot(2, 3, 1)  #(rows, cols, position)
     plt.imshow(reference)
-    plt.title("Reference")
-    fig.add_subplot(2, 2, 2) #in second position 
-    plt.imshow(final)
-    plt.title("Hyperbolic patch"+ str(angle))
+    plt.title("Input")
+    fig.add_subplot(2, 3, 2)
+    plt.imshow(img1)
+    plt.title("Focal spot: up left")
+    fig.add_subplot(2, 3, 3)
+    plt.imshow(img2)
+    plt.title("Focal spot: up right")
+    fig.add_subplot(2, 3, 4)  
+    plt.imshow(img3)
+    plt.title("Focal spot: down left")
+    fig.add_subplot(2, 3, 5) 
+    plt.imshow(img4)
+    plt.title("Focal spot: down right")
+    fig.add_subplot(2, 3, 6) 
+    plt.imshow(img5)
+    plt.title("Focal spot: center")
     plt.show()
 
-
+#center focus patch:
 create_corners(image, original_width)
-
 u_left = Im.open("upper_left.jpg")   #u = upper
 u_right = Im.open("upper_right.jpg") 
 b_left = Im.open("bottom_left.jpg") #b = bottom 
 b_right = Im.open("corner_4.jpg")
-
 #repeat this operation for all quarters of the input image
 hyperbolic_patch(u_left)
 hyperbolic_patch(u_right)
 hyperbolic_patch(b_left)
 hyperbolic_patch(b_right)
-result_image()
-final = Im.open("images/final_image_" +str(image_name) +str(angle)+".jpg")
-comparison(image, final)
+center_patch()
+
+#other patches 
+hyperbolic_patch(image) #up left
+image_dl = ImO.flip(image)
+hyperbolic_patch(image_dl) #down left
+image_ur = ImO.mirror(image)#up right
+hyperbolic_patch(image_ur)
+image_dr = ImO.flip(image)
+image_dr = ImO.mirror(image_dr) #down right
+hyperbolic_patch(image_dr)
+flip_patch()
+
+#plotting all the patches 
+center = Im.open("images/final_image_" +str(image_name) +str(angle)+".jpg")
+u_l = Im.open("images/u_l_patch" +str(image_name)+ str(angle) +".jpg")
+u_r = Im.open("images/u_r_patch" +str(image_name)+ str(angle) +".jpg")
+d_l = Im.open("images/d_l_patch" +str(image_name)+ str(angle) +".jpg")
+d_r = Im.open("images/d_r_patch" +str(image_name)+ str(angle) +".jpg")
+comparison(image, u_l, u_r, d_l, d_r, center)
