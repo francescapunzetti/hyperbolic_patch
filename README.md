@@ -13,16 +13,10 @@ The solution consists into divid the original image in subsection; the center of
 
 This scaling takes into account both direction:
 
-  
-
 $$\begin{cases}
-
 height' = \frac{height}{2^{j-1}}\\
-
 \\ width' = \frac{width}{2^{i-1}}
-
 \end{cases}$$
-
   
 
 The result image is compressed, but the center of the image, hypotetically where there are insterresting informations, has still a good resolution, while as you go far from the core the spatial resolution decrease as a power of 2.
@@ -97,7 +91,7 @@ Then at the beginning of the script you can set the input:
 
 And if you want to perform a rotation of the input image: 
 
-    angle = float(10) #inster 0 if you don't want rotation 
+    angle = float(10) #insert 0 if you don't want rotation 
 
 Then all parameters are set and you can compile the script. 
 All images to obtain the patches will be saved in the main folder, and will be overwrite if you decide to perform the program multiple times. 
