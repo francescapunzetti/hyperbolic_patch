@@ -17,10 +17,16 @@ height' = \frac{height}{2^{j-1}}\\
 \\ width' = \frac{width}{2^{i-1}}
 \end{cases}$$
 
-The result is called hyperbolic patch; it's an image with smaller dimensions compared to the original. The seed square maintain the same dimension, while the rest of the image is compressed. 
+The result is called hyperbolic patch; it's an image with smaller dimensions compared to the original. 
+The seed square maintain the same dimension, while the rest of the image is compressed. 
 This operation is repeated using as seed section each square of the grid.
 
-The result is a series of images with reduced dimensions that focus on different features of the original image. 
+The result is a series of images with reduced dimensions that focus on different features of the original image, as shown below: 
+
+<div  align='center'>
+<img  src="https://i.ibb.co/NmqgC9b/lab.png"  alt="mid" border="0">
+</div>
+
 
 It's also possible to perform a rotation of the input image, here's some example:
 
@@ -28,11 +34,6 @@ It's also possible to perform a rotation of the input image, here's some example
 <img  src="https://i.ibb.co/KKdQBTw/Hyperbolic-patches.png"  alt="mid" border="0">
 </div>
 
-Angle of rotation fixed to 0 and moves the focus along the image:
-
-<div  align='center'>
-<img  src="https://i.ibb.co/NmqgC9b/lab.png"  alt="mid" border="0">
-</div>
 
 ## Table of contents
 
@@ -94,14 +95,14 @@ Then at the beginning of the script you can set the input:
 
 And if you want to perform a rotation of the input image: 
 
-    angle = float(10) #insert 0 if you don't want rotation 
+    angle = float(number) #insert 0 if you don't want rotation 
 
 Then all parameters are set and you can compile the script. 
 
 All images to obtain the intermediate patches will be saved in the main folder, and will be overwrite if you decide to perform the program multiple times. 
 Instead, the output hyperbolic patches will be saved in the folder `images` and labeled with the name of the initial image and enumerated.
 
-At the end the code will plot all the hyperbolic patches obtained, as shown below: 
+At the end the code will plot all the hyperbolic patches obtained: 
 
 <div  align='center'>
 
@@ -109,4 +110,4 @@ At the end the code will plot all the hyperbolic patches obtained, as shown belo
 
 </div>
 
-Attention: take into account that the grid would be compressed, so the squares cannot be too small: some rows or columns could be compressed at dimensions < 1 and that's not possible! For this reason the dimension of the squares are fixed to 128x128 pixels.
+**Attention:** take into account that the grid would be compressed, so the squares cannot be too small: some rows or columns could be compressed at dimensions < 1 and that's not possible! For this reason the dimension of the squares are fixed to 128x128 pixels.
