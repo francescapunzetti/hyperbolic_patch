@@ -8,29 +8,31 @@ The aim of this project is to create hyperbolic patches starting from a given im
 
 This method is mainly used for histological images for neural networks; indeed this images could have high dimensions and in general pictures with dimensions larger than 512x512 pixels require a lot of time to be elaborated by a neural network.
 
-The solution consists into divide the original image in subsection; then starting from a chosen section in the image, that will maintain the same dimensions, the peripherical sections are scaled in both the direction by $\frac{1}{2^{n-1}}$ where *n* is and integer number, equal to 1 for the centered sections and increases in function of the distance from the center.
-
+The solution consists into divide the original image into a grid with squares of a fixed dimension (e.g. 128 x 128 pixels)
+Fixing one of this square as the seed section, the peripherical ones are scaled in both the direction by $\frac{1}{2^{n-1}}$ where *n* is and integer number, equal to 1 for the centered sections and increases in function of the distance from the center.
 This scaling takes into account both direction:
 
 $$\begin{cases}
 height' = \frac{height}{2^{j-1}}\\
 \\ width' = \frac{width}{2^{i-1}}
 \end{cases}$$
-  
- The result image has an hyperbolic compression but the seed section keeps the initial resolution. 
-Here's some examples with a general image; the first one focus the compression into the center of the input images with different angle of rotation: 
+
+The result is called hyperbolic patch; it's an image with smaller dimensions compared to the original. The seed square maintain the same dimension, while the rest of the image is compressed. 
+This operation is repeated using as seed section each square of the grid.
+
+The result is a series of images with reduced dimensions that focus on different features of the original image. 
+
+It's also possible to perform a rotation of the input image, here's some example:
 
 <div  align='center'>
 <img  src="https://i.ibb.co/KKdQBTw/Hyperbolic-patches.png"  alt="mid" border="0">
 </div>
-The second one has an angle of rotation fixed to 0 and moves the focus along the image:
+
+Angle of rotation fixed to 0 and moves the focus along the image:
+
 <div  align='center'>
 <img  src="https://i.ibb.co/NmqgC9b/lab.png"  alt="mid" border="0">
 </div>
-
-The latter is the direct output of the script. 
-As we can see, it's possible to focus on different details of the orginal images even if the final dimensions of the patches are smaller.
-  
 
 ## Table of contents
 
@@ -97,15 +99,14 @@ And if you want to perform a rotation of the input image:
 Then all parameters are set and you can compile the script. 
 
 All images to obtain the intermediate patches will be saved in the main folder, and will be overwrite if you decide to perform the program multiple times. 
-Instead, the output images will be saved in the folder `images` and labeled with the name of the initial image and the angle of rotation.
+Instead, the output hyperbolic patches will be saved in the folder `images` and labeled with the name of the initial image and enumerated.
 
-The output is a plot with the input image and all the patches generated, which are also saved as jpg. 
-Here's some results, with angle of rotation equal to 0: 
+At the end the code will plot all the hyperbolic patches obtained, as shown below: 
 
 <div  align='center'>
 
-<img  src="https://i.ibb.co/W6H9vH5/Patches.png"  alt="mid"  border="0">
+<img  src="https://i.ibb.co/FK2xP0y/Input-512pixel.png"  alt="mid"  border="0">
 
 </div>
 
-Enjoy!
+Attention: take into account that the grid would be compressed, so the squares cannot be too small: some rows or columns could be compressed at dimensions < 1 and that's not possible! For this reason the dimension of the squares are fixed to 128x128 pixels.
