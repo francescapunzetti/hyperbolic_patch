@@ -1,4 +1,4 @@
-from project import hyperbolic_patch, comparison
+from project import hyperbolic_patch
 import numpy as np
 from PIL import Image, ImageOps
 from patchify import patchify

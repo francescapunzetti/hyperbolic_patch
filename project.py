@@ -59,7 +59,8 @@ def hyperbolic_patch(
                     patch = Im.open(f"patch_{j*patches_per_row+ i}.jpg")   #works
                     patch.save(f"patch_{j+1-n}_{i-m}.jpg")
 
-#higher is the values of the indeces, higher is the distance from the starting patch (upper left)
+#higher is the values of the indeces, higher is the distance from the starting patch. The starting patch has 
+#value 2**(args) = 1
             for j in range(1,patches_per_row+1): 
                 for i in range(1,patches_per_row+1):
                     image = Im.open(f"patch_{j-n}_{i-m}.jpg")
@@ -69,7 +70,6 @@ def hyperbolic_patch(
                     image_resized.save(f"patch_res_{j-n}_{i-m}.jpg")
 
 #once all patches had hyperbolic compression, recreate rows
-
             for j in range(1,patches_per_row+1):
                 vector_row= []
                 for i in range(1,patches_per_row+1):
@@ -86,6 +86,7 @@ def hyperbolic_patch(
                 vector_col.append(image)
             merge = np.vstack(vector_col)
             hyperbolic_corner = Im.fromarray(merge)
+
 #the output image is labeled with the time, in order to not overwrite images
             now = datetime.now()
             now = now.strftime("%-I%-M%-S%f")
@@ -108,10 +109,7 @@ def rename():
 def comparison():
    
     """
-    Arguments: 
-    reference: input image
-    final, im1, im2, im3, im4, im5: output images
-    This function plots the images side by side
+    This function plots all patches obtained side by side
     """
     #no test needed because it's a visualization function 
     images = glob.glob("images/hyperbolic_"+str(image_name)+ "patch_n*")
