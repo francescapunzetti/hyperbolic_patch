@@ -99,8 +99,9 @@ And if you want to perform a rotation of the input image:
 
 Then all parameters are set and you can compile the script. 
 
-All images to obtain the intermediate patches will be saved in the main folder, and will be overwrite if you decide to perform the program multiple times. 
-Instead, the output hyperbolic patches will be saved in the folder `images` and labeled with the name of the initial image and enumerated.
+All intermediate patches will be saved in the main folder, and will be overwrite if you decide to compile the script multiple times. 
+
+Instead, the final hyperbolic patches will be saved in the folder `images`, enumerated and labeled with the name of the input image.
 
 At the end the code will plot all the hyperbolic patches obtained: 
 
