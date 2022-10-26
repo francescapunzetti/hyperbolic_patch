@@ -14,7 +14,7 @@ import math
 
 #Importing the input image.
 #It must be a squared image.
-image_name = "margherita"
+image_name = "labrador"
 image = Im.open("images/" + str(image_name)+".jpg") 
 
 #To perform hyperbolic patches at different rotations
@@ -35,19 +35,17 @@ def hyperbolic_patch(
     
     This patchify the input image in 16 patches. Then for each of them 
     is performed and hyperbolic compression of the (w,h) of a factor
-    1/(2**(num-1)). n depends on the distance from the seed section which is
-    determinated by the indeces n and m.
-    The seed sections will maintain the same dimensions. 
-    num can be separated in i for the columns and j for the row. 
+    1/(2**(n-1)). n depends on the distance from the first patch
+    in the upper-left corner, which mantain the same dimensions. 
+    n can be separated in i for the columns and j for the row. 
     After the resized all the patches are stacked back together. 
-    The output are RGB images with an hyperbolic compression, each with the
-    focus on a different section.
+    The output is an RGB image with an hyperbolic compression.
     """ 
     patches_per_row = image.width // step
     image = np.asarray(image)
     patches = patchify(image, (width, height, 3), step=step)
-    for n in range(0, patches_per_row): #m and n change the seed section. In this way all the section 
-        for m in range(0, patches_per_row): #are the the focus of the hyperbolic patch 
+    for n in range(0, patches_per_row):
+        for m in range(0, patches_per_row):
             for i in range(patches.shape[0]):
                 for j in range(patches.shape[1]):
                     patch = patches[i, j, 0]
@@ -58,15 +56,15 @@ def hyperbolic_patch(
 #rename all patches per rows and columns to work on indices
             for j in range(0,patches_per_row): #n° row 
                 for i in range(1,patches_per_row+1): #n° column
-                    patch = Im.open(f"patch_{j*patches_per_row+ i}.jpg") 
-                    patch.save(f"patch_{j+1-n}_{i-m}.jpg") 
+                    patch = Im.open(f"patch_{j*patches_per_row+ i}.jpg")   #works
+                    patch.save(f"patch_{j+1-n}_{i-m}.jpg")
 
 #higher is the values of the indeces, higher is the distance from the starting patch. The starting patch has 
 #value 2**(args) = 1
             for j in range(1,patches_per_row+1): 
                 for i in range(1,patches_per_row+1):
                     image = Im.open(f"patch_{j-n}_{i-m}.jpg")
-                    height= int(step/(2**abs((j-n-1)))) #the seed section is the one where 2**(args) = 1
+                    height= int(step/(2**abs((j-n-1))))
                     width = int(step/(2**abs((i-m-1))))
                     image_resized = image.resize((width,height), resample=0, reducing_gap=None)
                     image_resized.save(f"patch_res_{j-n}_{i-m}.jpg")
@@ -97,6 +95,11 @@ def hyperbolic_patch(
     return hyperbolic_corner
 
 def rename(): 
+    """
+    This function renames all the outputs of the hyperbolic_patch
+    function replacing the label of time with input image name and
+    enumerating the images
+    """
     images = glob.glob("hyperbolic_corner*")
     images = sorted(images)
     i = 0
@@ -113,8 +116,7 @@ def comparison():
     """
     This function plots all patches obtained side by side
     """
-    #no test needed because it's a visualization function 
-    images = glob.glob("images/hyperbolic_"+str(image_name)+ "patch_n*")
+    images = glob.glob("images/hyperbolic_"+str(image_name)+ "patch_n*") #opening patches
     n_patch = len(images)
     row= int(math.sqrt(n_patch))
     col = n_patch // row
