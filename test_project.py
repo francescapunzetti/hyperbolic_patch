@@ -1,15 +1,17 @@
-from project import hyperbolic_patch, rename, comparison 
+from project import hyperbolic_patch, rename, pad
 import numpy as np
 from PIL import Image as Im 
-from patchify import patchify
 import glob
+from PIL import ImageOps as ImO
 import math
 
-image_name = "labrador"
+image_name = "margherita"
 image = Im.open("images/" + str(image_name)+".jpg") 
 original_width = image.width
 angle= 0.0
 step = 128
+n_rows = original_width//step
+
 def test_hyperbolic_patch():
     """
     GIVEN: an image
@@ -53,3 +55,105 @@ def test_comparison():
     assert type(row)  == int
     assert type(col) == int
     assert row * col == n_patch 
+
+def test_pad():
+    assert pad(0) == step
+    for i in range(n_rows):
+        assert pad(i) % 2 == 0
+
+def test_centering():
+
+    n_rows = original_width // step #total number of columns and rows 
+    
+    num = 1 #initialize the enumeration the number of hyperbolic patch 
+    
+    #initialize the dimension of the padding borders
+    right=0 
+    bottom=0
+    left=0
+    top=0
+
+    for row in range(1, n_rows+1):
+    #adding the padding in the direction of the zoomed patch. In this way we can 
+    #balance the image in order to 
+        if row == 1: 
+            top= 0 
+            bottom = 0 
+            for i in range(1, n_rows - row + 1):
+                #just adding the number of pixels of the image in y direction excluding the current row
+                top = top + pad(i)  
+                
+
+        if 1 < row <= n_rows//2 & row != 1: 
+            bottom = 0 
+            sum_top =  0
+            #adding a number of pixels equal to the difference between the n° of pixels
+            #before and after the current row
+            for i in range(1, n_rows - row + 1):
+                sum_top = sum_top + pad(i)
+            for j in range(1, row):
+                top = sum_top - pad(j)
+
+
+        if n_rows//2 < row < n_rows: 
+            top = 0 
+            sum_bottom = 0
+            for i in range(1, n_rows - row + 1):
+                sum_bottom = sum_bottom + pad(i)  
+            for j in range(1, row):
+                bottom = sum_bottom - pad(j)
+        
+        if row == n_rows: 
+            bottom= 0 
+            top= 0 
+            for i in range(1, n_rows):
+                bottom = bottom + pad(i)
+        
+        for col in range(1 ,n_rows+1):
+            img=Im.open("images/hyperbolic_"+str(image_name)+ f"patch_n°{num}.jpg") 
+            
+            if col == 1: #if it's the first column there no pixels before
+                left = 0 
+                right= 0
+                for i in range(1, n_rows - col + 1):  #i is the number of columns after the focused one
+                    left = left + pad(i)
+
+            if 1< col <= n_rows//2 & col != 1: 
+                right = 0
+                sum_left = 0
+                for i in range(1, n_rows - col + 1):  #i is the number of columns after the focused one
+                    sum_left = sum_left + pad(i)
+                for j in range(1, col): # j is the number of columns before the focused one 
+                    sum_left = abs(sum_left - pad(j))
+                    left= sum_left
+            
+            if  n_rows//2 < col < n_rows:
+                left = 0 
+                sum_right=  0
+                for i in range(1, n_rows - col + 1 ): # 6 =5+1
+                    sum_right = sum_right + pad(i) # sum
+                for j in range(1, col):
+                    right = sum_right - pad(j) 
+            
+            if col == n_rows: #if it's the last column there are not pixels after it
+                left =  0 
+                right = 0 
+                for i in range(1, n_rows): # 6 =5+1
+                    right = right + pad(i)
+                  
+            border = (left, top, right, bottom)
+            new_img = ImO.expand(img, border=border, fill="black")
+
+            ## test 
+
+            # once tested for the row, is valid also for columns 
+        
+            if row == 1: 
+                assert new_img.height //2  == top + step//2 
+            if 1 < row <= n_rows//2: 
+                half = 0 
+                for j in range(1, row):
+                    half = half + pad(j)
+                assert new_img.height //2  == top + step//2 + half
+
+            num = num +1
