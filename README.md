@@ -8,7 +8,7 @@ The aim of this project is to create hyperbolic patches starting from a given im
 
 This method is mainly used for histological images for neural networks; indeed this images could have high dimensions and in general pictures with dimensions larger than 512x512 pixels require a lot of time to be elaborated by a neural network.
 
-The solution consists into divide the original image into a grid with squares of a fixed dimension (e.g. 128 x 128 pixels)
+The solution consists in dividing the original image into a grid with squares of a fixed dimension (e.g. 128 x 128 pixels)
 Fixing one of this square as the seed section, the peripherical ones are scaled in both the direction by $\frac{1}{2^{n-1}}$ where *n* is and integer number, equal to 1 for the centered sections and increases in function of the distance from the center.
 This scaling takes into account both direction:
 
