@@ -7,7 +7,8 @@ The aim of this project is to create hyperbolic patches starting from a given im
 
 This method is mainly used for histological images for neural networks; indeed this images could have high dimensions and in general pictures with dimensions larger than 512x512 pixels require a lot of time to be elaborated by a neural network.
 
-The solution consists in dividing the original image into a grid with squares of a fixed dimension (e.g. 128 x 128 pixels)
+The solution consists in dividing the original image into a grid with squares of a fixed dimension (e.g. 128 x 128 pixels).
+
 Fixing one of this square as the seed section, the peripherical ones are scaled in both the direction by $\frac{1}{2^{n-1}}$ where *n* is and integer number, equal to 1 for the centered sections and increases in function of the distance from the center.
 This scaling takes into account both direction:
 
@@ -16,8 +17,8 @@ height' = \frac{height}{2^{j-1}}\\
 \\ width' = \frac{width}{2^{i-1}}
 \end{cases}$$
 
-The result is called hyperbolic patch; it's an image with smaller dimensions compared to the original. 
-The seed square maintain the same dimension, while the rest of the image is compressed. 
+The output is an hyperbolic compressed patch; indeed, it's an image with smaller dimensions compared to the original. 
+In particular, the seed square maintain the same dimension, while the rest of the image is compressed. 
 This operation is repeated using as seed section each square of the grid.
 
 The result is a series of images with reduced dimensions that focus on different features of the original image, as shown below: 
@@ -100,15 +101,15 @@ And if you want to perform a rotation of the input image:
 
     angle = float(number) #insert 0 if you don't want rotation 
 
-After this is necessary to set the dimensions of the grid of the image and consequently the number of patches for which perform the hyperbolic compression. 
+After this, it is necessary to set the dimensions of the grid of the image and consequently the number of patches for which perform the hyperbolic compression. 
 
     hyberbolic_patches(image, step, width, height) 
 
 In order to obtain best results, the values of `step`, `width` and `height` should be the same; in this way you can avoid the oversampling (patches overlap) and the undersampling (you lose some pixels between a patch and the next one).
 
-Then it's necessary to add borders to the obtained images in order to center the "zoomed" part of the image, where we have the focus; this would be very helpfull when using these images as input for neural nets. 
+Then it's necessary to add borders to the obtained images in order to center the "zoomed" part of the image, where we have the focus; this would be very helpfull when using these images as input for any neural network. 
 
-That's done using the function `centering()`. In this function the default value of the step is 128, so if it's different in the function `hyperbolic_patches()`, it's necessary also to change for that's one. 
+That's done using the function `centering()`. In this function the default value of the step is 128, so if it is set differently in the function `hyperbolic_patches()`, you have also to change in the first one, so that you can have the correct centering of the patches. 
 
 After you compile the script, all intermediate patches will be saved in the main folder, and will be overwrite if you decide to compile the script multiple times. 
 
