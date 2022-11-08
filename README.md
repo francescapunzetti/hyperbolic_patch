@@ -101,14 +101,16 @@ Then all parameters are set and you can compile the script.
 
 All intermediate patches will be saved in the main folder, and will be overwrite if you decide to compile the script multiple times. 
 
-Instead, the final hyperbolic patches will be saved in the folder `images`, enumerated and labeled with the name of the input image.
+Instead, the final hyperbolic patches will be saved in the folder `images`, enumerated and labeled with the name of the input image and the angle of rotation.
+
+Then it's necessary to add borders to the obtained images in order to center the "zoomed" part of the image, where we have the focus; this would be very helpfull when using these images as input for neural nets. 
 
 At the end the code will plot all the hyperbolic patches obtained: 
 
 <div  align='center'>
 
-<img  src="https://i.ibb.co/FK2xP0y/Input-512pixel.png"  alt="mid"  border="0">
+<img  src="https://i.ibb.co/DWBdS0v/hyperbolic-patches.png"  alt="mid"  border="0">
 
 </div>
 
-**Attention:** take into account that the grid would be compressed, so the squares cannot be too small: some rows or columns could be compressed at dimensions < 1 and that's not possible! For this reason the dimension of the squares are fixed to 128x128 pixels.
+

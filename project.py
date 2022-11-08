@@ -12,7 +12,7 @@ import math
 
 # Importing the input image
 # It must be a squared image
-image_name = "margherita"
+image_name = "histo"
 image = Im.open("images/" + str(image_name)+".jpg") 
 
 # To perform hyperbolic patches at different rotations
