@@ -11,7 +11,6 @@ import math
 
 
 # Importing the input image
-# It must be a squared image
 image_name = "histo"
 image = Im.open("images/" + str(image_name)+".jpg") 
 
