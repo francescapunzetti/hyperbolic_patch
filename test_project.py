@@ -5,11 +5,14 @@ import glob
 from PIL import ImageOps as ImO
 import math
 
+#image_name must be the same as in project.py
 image_name = "histo"
 image = Im.open("images/" + str(image_name)+".jpg") 
 original_width = image.width
 angle= 0.0
-step = 128
+
+#step must have the same value as in project.py
+step = 128 
 n_rows = original_width//step
 
 def test_hyperbolic_patch():
@@ -57,13 +60,26 @@ def test_comparison():
     assert row * col == n_patch 
 
 def test_pad():
+    """
+    GIVEN: step
+    WHEN: applying pad(i) function, where i is and integer
+    THEN: the test passes when 0 is the neutral element and step scales by two for
+    all the other numbers from 1 to the total number of rows.
+    """
     assert pad(0) == step
     for i in range(n_rows):
         assert pad(i) % 2 == 0
 
 def test_centering():
+    """
+    GIVEN: hyperbolic patches
+    WHEN: applying centering function
+    THEN: the test passes when the output is an image where half 
+    height corresponds to the center of the zoomed patch of the image; if it's
+    true in one dim, it's true also in the other one because the procedure is analogous. 
+    That's means that the zoomed patch is in the center of the image.
+    """
     # rewriting centering_function 
-
     n_rows = original_width // step  
     
     num = 1 
