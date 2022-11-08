@@ -27,8 +27,8 @@ The result is a series of images with reduced dimensions that focus on different
 <table cellspacing="2" cellpadding="2" width="600" border="0">
 <tbody>
 <tr>
-<td valign="top" width="300"><img src="https://i.ibb.co/5kH6cN2/mid-colored.jpg" alt="mid-colored" align=”center” border="0"></a></td>
-<td valign="top" width="300"><img src="images/labrador.jpg" alt="lab 0" align=”center” border="0"></a></td>
+<td valign="top" width="300"><img src="/assets/images/labrador.jpg" alt="mid-colored" align=”center” border="0"></a></td>
+<td valign="top" width="300"><img src="https://i.ibb.co/P1gtPcX/lab-1.png" alt="lab 0" align=”center” border="0"></a></td>
 </tr>
 </tbody>
 </table>

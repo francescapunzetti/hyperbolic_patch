@@ -12,7 +12,7 @@ import math
 
 # Importing the input image
 # It must be a squared image
-image_name = "histo"
+image_name = "histor"
 image = Im.open("images/" + str(image_name)+".jpg") 
 
 # To perform hyperbolic patches at different rotations
@@ -261,5 +261,5 @@ def comparison():
 
 hyperbolic_patch(image,  step=128, width= 128, height = 128) 
 rename()
-centering(step=128)
+#centering(step=128)
 comparison()
