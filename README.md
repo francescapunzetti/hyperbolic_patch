@@ -23,15 +23,21 @@ This operation is repeated using as seed section each square of the grid.
 
 The result is a series of images with reduced dimensions that focus on different features of the original image, as shown below: 
 
-<div  align='center'>
-<img  src="https://i.ibb.co/NmqgC9b/lab.png"  alt="mid" border="0">
+<div align='center'>
+<table cellspacing="2" cellpadding="2" width="600" border="0">
+<tbody>
+<tr>
+<td valign="top" width="300"><img src="https://i.ibb.co/5kH6cN2/mid-colored.jpg" alt="mid-colored" align=”center” border="0"></a></td>
+<td valign="top" width="300"><img src="images/labrador.jpg" alt="lab 0" align=”center” border="0"></a></td>
+</tr>
+</tbody>
+</table>
 </div>
-
 
 It's also possible to perform a rotation of the input image, here's some example:
 
 <div  align='center'>
-<img  src="https://i.ibb.co/KKdQBTw/Hyperbolic-patches.png"  alt="mid" border="0">
+<img  src="https://i.ibb.co/rbzpZMH/lab-45.png"  alt="mid" border="0">
 </div>
 
 
@@ -84,8 +90,6 @@ Once installed the requirements, it's possible to proceed with the project.
 First of all, should decide the input image; if it isn't present yet into the folder `images`, you can add it: 
 
     mv path_your_file/file  images/
-
-The only restriction is that the input should be a squared image. 
 
 Then at the beginning of the script you can set the input:
 
