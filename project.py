@@ -260,5 +260,5 @@ def comparison():
 
 hyperbolic_patch(image,  step=128, width= 128, height = 128) 
 rename()
-#centering(step=128)
+centering(step=128)
 comparison()
