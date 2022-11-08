@@ -1,5 +1,4 @@
 
-
 # Hyperbolic Patch
 
 ## Project
@@ -27,14 +26,14 @@ The result is a series of images with reduced dimensions that focus on different
 <table cellspacing="2" cellpadding="2" width="600" border="0">
 <tbody>
 <tr>
-<td valign="top" width="300"><img src="/assets/images/labrador.jpg" alt="mid-colored" align=”center” border="0"></a></td>
-<td valign="top" width="300"><img src="https://i.ibb.co/P1gtPcX/lab-1.png" alt="lab 0" align=”center” border="0"></a></td>
+<td valign="top" height="400" width="400"><img src="https://i.ibb.co/tmkjVqm/Schermata-2022-11-08-alle-15-53-22.png" alt="original" align=”center” title="Original" border="0"></a></td>
+<td valign="top" width="500"><img src="https://i.ibb.co/P1gtPcX/lab-1.png" alt="lab 0" align=”center” border="0"></a></td>
 </tr>
 </tbody>
 </table>
 </div>
 
-It's also possible to perform a rotation of the input image, here's some example:
+It's also possible to perform a rotation of the input image, here's an example with a rotation angle of 45 degrees:
 
 <div  align='center'>
 <img  src="https://i.ibb.co/rbzpZMH/lab-45.png"  alt="mid" border="0">
@@ -101,13 +100,20 @@ And if you want to perform a rotation of the input image:
 
     angle = float(number) #insert 0 if you don't want rotation 
 
-Then all parameters are set and you can compile the script. 
+After this is necessary to set the dimensions of the grid of the image and consequently the number of patches for which perform the hyperbolic compression. 
 
-All intermediate patches will be saved in the main folder, and will be overwrite if you decide to compile the script multiple times. 
+    hyberbolic_patches(image, step, width, height) 
+
+In order to obtain best results, the values of `step`, `width` and `height` should be the same; in this way you can avoid the oversampling (patches overlap) and the undersampling (you lose some pixels between a patch and the next one).
+
+Then it's necessary to add borders to the obtained images in order to center the "zoomed" part of the image, where we have the focus; this would be very helpfull when using these images as input for neural nets. 
+
+That's done using the function `centering()`. In this function the default value of the step is 128, so if it's different in the function `hyperbolic_patches()`, it's necessary also to change for that's one. 
+
+After you compile the script, all intermediate patches will be saved in the main folder, and will be overwrite if you decide to compile the script multiple times. 
 
 Instead, the final hyperbolic patches will be saved in the folder `images`, enumerated and labeled with the name of the input image and the angle of rotation.
 
-Then it's necessary to add borders to the obtained images in order to center the "zoomed" part of the image, where we have the focus; this would be very helpfull when using these images as input for neural nets. 
 
 At the end the code will plot all the hyperbolic patches obtained: 
 
