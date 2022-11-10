@@ -21,6 +21,37 @@ image= image.rotate(angle, resample=0, expand=0)
 # Saving the original dimensions for the following functions
 original_width = image.width
 
+
+def save_patch(patches: np):
+    for i in range(patches.shape[0]):
+        for j in range(patches.shape[1]):
+            patch = patches[i, j, 0]
+            patch = Im.fromarray(patch)
+            num = i * patches.shape[1] + j
+            patch.save(f"first_patch_{num+1}.jpg")
+
+def reconstruct_image(patches_per_row, n, m
+                    )-> Image:
+# all rows are stack together to recreate the original image with hyperbolic compression
+    for j in range(1,patches_per_row+1):
+        vector_row= []
+        for i in range(1,patches_per_row+1):
+            image = Im.open(f"patch_res_{j-n}_{i-m}.jpg")
+            vector_row.append(image)
+            merge = np.hstack(vector_row)
+        merged = Im.fromarray(merge)
+        merged.save(f"row_{j}.jpg")
+
+# once all patches had hyperbolic compression, recreate rows
+    vector_col= []
+    for j in range(1,patches_per_row+1):
+        image = Im.open(f"row_{j}.jpg")
+        vector_col.append(image)
+    merge = np.vstack(vector_col)
+    hyperbolic_corner = Im.fromarray(merge)
+    return hyperbolic_corner
+
+
 def hyperbolic_patch(
     image: Image,
     step: int,
@@ -52,17 +83,11 @@ def hyperbolic_patch(
     
     for n in range(0, patches_per_row):
         for m in range(0, patches_per_row):
-            for i in range(patches.shape[0]):
-                for j in range(patches.shape[1]):
-                    patch = patches[i, j, 0]
-                    patch = Im.fromarray(patch)
-                    num = i * patches.shape[1] + j
-                    patch.save(f"patch_{num+1}.jpg")
-
+            save_patch(patches)
     # rename all patches per rows and columns in function of the indices values
             for j in range(0,patches_per_row): #n° row 
                 for i in range(1,patches_per_row+1): #n° column
-                    patch = Im.open(f"patch_{j*patches_per_row+ i}.jpg") 
+                    patch = Im.open(f"first_patch_{j*patches_per_row+ i}.jpg") 
                     patch.save(f"patch_{j+1-n}_{i-m}.jpg")
 
     # higher is the values of the indeces, higher is the distance from the starting patch. 
@@ -77,31 +102,16 @@ def hyperbolic_patch(
                         image_resized = image.resize((width,height), resample=0, reducing_gap=None)
                         image_resized.save(f"patch_res_{j-n}_{i-m}.jpg")
 
-    # once all patches had hyperbolic compression, recreate rows
-            for j in range(1,patches_per_row+1):
-                vector_row= []
-                for i in range(1,patches_per_row+1):
-                    image = Im.open(f"patch_res_{j-n}_{i-m}.jpg")
-                    vector_row.append(image)
-                    merge = np.hstack(vector_row)
-                merged = Im.fromarray(merge)
-                merged.save(f"row_{j}.jpg")
-
     # all rows are stack together to recreate the original image with hyperbolic compression
-            vector_col= []
-            for j in range(1,patches_per_row+1):
-                image = Im.open(f"row_{j}.jpg")
-                vector_col.append(image)
-            merge = np.vstack(vector_col)
-            hyperbolic_corner = Im.fromarray(merge)
+            hyperbolic_corner = reconstruct_image(patches_per_row, n, m)
 
     # the output image is labeled with the time, in order to not overwrite images
             now = datetime.now()
             now = now.strftime("%-I%-M%-S%f")
             image_name = "hyperbolic_corner"+str(now)+".jpg"
             hyperbolic_corner.save(image_name)
-    
-    return hyperbolic_corner
+
+
 
 def rename(): 
     """
@@ -136,6 +146,84 @@ def pad(i: int,
         """
         return step//(2**i)
         
+def pad_per_row(row: int,
+                n_rows: int
+                )-> int:
+
+    if row == 1: 
+    #first row has no rows above, so need to be balanced with all the remaining rows        
+        top= 0 
+        bottom = 0 
+        for i in range(1, n_rows - row + 1):
+    # just adding the number of pixels of the image in y direction excluding the current row
+            top = top + pad(i)  
+                
+
+    if 1 < row <= n_rows//2 & row != 1: 
+        bottom = 0 
+        sum_top =  0
+    # adding a number of pixels equal to the difference between the n° of pixels
+    # before and after the current row
+        for i in range(1, n_rows - row + 1):
+            sum_top = sum_top + pad(i)
+        for j in range(1, row):
+            top = sum_top - pad(j)
+
+
+    if n_rows//2 < row < n_rows: 
+        top = 0 
+        sum_bottom = 0
+        for i in range(1, n_rows - row + 1):
+            sum_bottom = sum_bottom + pad(i)  
+        for j in range(1, row):
+            bottom = sum_bottom - pad(j)
+        
+    if row == n_rows: 
+        bottom= 0 
+        top= 0 
+        for i in range(1, n_rows):
+            bottom = bottom + pad(i)
+    
+    return (bottom, top)
+
+def pad_per_col(col: int,
+                n_rows: int
+                )-> int:
+
+    if col == 1: 
+        left = 0 
+        right= 0
+    #i is the number of columns after the focused one
+        for i in range(1, n_rows - col + 1): 
+            left = left + pad(i)
+
+    if 1< col <= n_rows//2 & col != 1: 
+        right = 0
+        sum_left = 0
+        for i in range(1, n_rows - col + 1):  
+            sum_left = sum_left + pad(i)
+    # j is the number of columns before the focused one             
+        for j in range(1, col): 
+            sum_left = abs(sum_left - pad(j))
+            left= sum_left
+            
+    if  n_rows//2 < col < n_rows:
+        left = 0 
+        sum_right=  0
+        for i in range(1, n_rows - col + 1 ): 
+            sum_right = sum_right + pad(i) 
+        for j in range(1, col):
+            right = sum_right - pad(j) 
+
+    # if it's the last column there are not pixels after it            
+    if col == n_rows: 
+        left =  0 
+        right = 0 
+        for i in range(1, n_rows): 
+            right = right + pad(i)
+    return (right, left)
+                  
+
 def centering(step: int): 
     """
     This function adds a black padding in order to center the zoomed part 
@@ -156,98 +244,31 @@ def centering(step: int):
     top=0
 
     for row in range(1, n_rows+1):
-    
-    # adding the padding in the direction of the zoomed patch. In this way we can 
-    # balance the image in order to center it 
-
-        if row == 1: 
-    #first row has no rows above, so need to be balanced with all the remaining rows        
-            top= 0 
-            bottom = 0 
-            for i in range(1, n_rows - row + 1):
-    # just adding the number of pixels of the image in y direction excluding the current row
-                top = top + pad(i)  
-                
-
-        if 1 < row <= n_rows//2 & row != 1: 
-            bottom = 0 
-            sum_top =  0
-    # adding a number of pixels equal to the difference between the n° of pixels
-    # before and after the current row
-            for i in range(1, n_rows - row + 1):
-                sum_top = sum_top + pad(i)
-            for j in range(1, row):
-                top = sum_top - pad(j)
-
-
-        if n_rows//2 < row < n_rows: 
-            top = 0 
-            sum_bottom = 0
-            for i in range(1, n_rows - row + 1):
-                sum_bottom = sum_bottom + pad(i)  
-            for j in range(1, row):
-                bottom = sum_bottom - pad(j)
         
-        if row == n_rows: 
-            bottom= 0 
-            top= 0 
-            for i in range(1, n_rows):
-                bottom = bottom + pad(i)
+        (bottom, top)= pad_per_row(row, n_rows)
         
     # same procedure also for colums, so adding padding at left and right 
         for col in range(1 ,n_rows+1):
             img=Im.open("images/hyperbolic_"+str(image_name)+"_"+str(angle)+ "_"+f"patch_n°{num}.jpg") 
             
-            if col == 1: 
-                left = 0 
-                right= 0
-    #i is the number of columns after the focused one
-                for i in range(1, n_rows - col + 1): 
-                    left = left + pad(i)
-
-            if 1< col <= n_rows//2 & col != 1: 
-                right = 0
-                sum_left = 0
-                for i in range(1, n_rows - col + 1):  
-                    sum_left = sum_left + pad(i)
-    # j is the number of columns before the focused one             
-                for j in range(1, col): 
-                    sum_left = abs(sum_left - pad(j))
-                    left= sum_left
+            (right, left)= pad_per_row(col, n_rows)
             
-            if  n_rows//2 < col < n_rows:
-                left = 0 
-                sum_right=  0
-                for i in range(1, n_rows - col + 1 ): 
-                    sum_right = sum_right + pad(i) 
-                for j in range(1, col):
-                    right = sum_right - pad(j) 
-
-    # if it's the last column there are not pixels after it            
-            if col == n_rows: 
-                left =  0 
-                right = 0 
-                for i in range(1, n_rows): 
-                    right = right + pad(i)
-                  
             border = (left, top, right, bottom)
             new_img = ImO.expand(img, border=border, fill="black")
             new_img.save("images/hyperbolic_"+str(image_name)+"_"+str(angle)+ "_"+f"patch_n°{num}.jpg")
             num = num +1
  
-def comparison():
+def comparison(images
+            )-> int:
    
     """
     This function plots all patches obtained by the previous 
     functions side by side in a grid
     """
-    images = glob.glob("images/hyperbolic_"+str(image_name)+"_"+str(angle)+ "_"+"patch_n°*")
-    
     # creating a squarred grid with equal number of column and rows where showing the output
     n_patch = len(images)
     row= int(math.sqrt(n_patch))
     col = n_patch // row
-    
     i=0
     for image in images: 
         img=Im.open(str(image))
@@ -256,9 +277,11 @@ def comparison():
         plt.imshow(img)      
         i = i+1
     plt.show()
+    return (row, col)
 
 
 hyperbolic_patch(image,  step=128, width= 128, height = 128) 
 rename()
 centering(step=128)
-comparison()
+images = glob.glob("images/hyperbolic_"+str(image_name)+"_"+str(angle)+ "_"+"patch_n°*")
+comparison(images)
