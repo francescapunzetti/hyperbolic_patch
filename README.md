@@ -5,9 +5,9 @@
 
 The aim of this project is to create hyperbolic patches starting from a given image.
 
-This method is mainly used for histological images for neural networks; indeed this images could have high dimensions and in general pictures with dimensions larger than 512x512 pixels require a lot of time to be elaborated by a neural network.
+This method is mainly used for histological images for neural networks; indeed these images could have high dimensions and in general pictures large dimensions require a lot of time to be elaborated by any neural network.
 
-The solution consists in dividing the original image into a grid with squares of a fixed dimension (e.g. 128 x 128 pixels).
+To overcome this problem, a solution could consist into dividing the original image into a grid with squares of a fixed dimension.
 
 Fixing one of this square as the seed section, the peripherical ones are scaled in both the direction by $\frac{1}{2^{n-1}}$ where *n* is and integer number, equal to 1 for the centered sections and increases in function of the distance from the center.
 This scaling takes into account both direction:
@@ -57,7 +57,7 @@ It's also possible to perform a rotation of the input image, here's an example w
 
   
 
-The folder `images` contains the images used as input and some output examples
+The folder `images` contains the images used as input and some output examples. This folder includes also test images, used to test functions.
 
 Into `.gitignore` are contained all files we don't want to track.
 
@@ -90,6 +90,17 @@ Once installed the requirements, it's possible to proceed with the project.
 First of all, should decide the input image; if it isn't present yet into the folder `images`, you can add it: 
 
     mv path_your_file/file  images/
+    
+The input parameters are optimize to use as input also OME tiff type; in particular this images are pyramidal tiff containing different layers of the picture with a decreasing resolution. 
+
+So once compiled the script, you can choose to use as input a pyramidal tiff and separate the different "pages" or use another format. 
+
+If you select the first one, the program creates a number of .png equal to the number of layer in the folder `images`; if you select the latter, you skip directly to insert the name of the page or image you want to use: (code)
+
+After this, in case of particularly large image, you can crop just a part as input by entering the (xmin, ymin, xmax, ymax) value of the area: (code)
+
+Then, it's possible to insert an angle of rotation of the input image: 
+
 
 Then at the beginning of the script you can set the input:
 
