@@ -90,22 +90,18 @@ The input parameters are optimize to use as input also OME tiff type; in particu
 
 So once compiled the script, you can choose to use as input a pyramidal tiff and separate the different "pages" or use another format. 
 
-If you select the first one, the program creates a number of .png equal to the number of layer in the folder `images`; if you select the latter, you skip directly to insert the name of the page or image you want to use: (code)
+If you select the first one, the program creates a number of .jpg equal to the number of layer in the folder `images`; if you select the latter, you skip directly to insert the name of the page or image you want to use:
+```
+image_name = input("Name of layer or image to be considered:")
+```
 
-After this, in case of particularly large image, you can crop just a part as input by entering the (xmin, ymin, xmax, ymax) value of the area: (code)
+After this, in case of particularly large image, you can crop just a part as input by entering the (xmin, ymin, xmax, ymax) value of the area:
+```
+area = input("Select area in the image (x0, y0, y0, y1). \nIf you don't want to crop the image insert original dims: ") 
+area = tuple(map(int, area.split(', ')))
+```
 
-Then, it's possible to insert an angle of rotation of the input image: 
-
-
-Then at the beginning of the script you can set the input:
-
-    image_name = "your_image"
-    image = Im.open("images/" + str(image_name)+".jpg") #change also the
-    #type of image if it's not .jpg
-
-And if you want to perform a rotation of the input image: 
-
-    angle = float(number) #insert 0 if you don't want rotation 
+Then, it's possible to insert an angle of rotation of the input image.
 
 After this, it is necessary to set the dimensions of the grid of the image and consequently the number of patches for which perform the hyperbolic compression. 
 
@@ -121,11 +117,10 @@ After you compile the script, all intermediate patches will be saved in the main
 
 Instead, the final hyperbolic patches will be saved in the folder `images`, enumerated and labeled with the name of the input image and the angle of rotation.
 
-
 At the end the code will plot all the hyperbolic patches obtained: 
 
 <div  align='center'>
 
-<img  src="https://i.ibb.co/DWBdS0v/hyperbolic-patches.png"  alt="mid"  border="0">
+<img  src="https://i.ibb.co/cyNmRK7/Patches1.png"  alt="mid"  border="0">
 
 </div>
