@@ -48,7 +48,7 @@ It's also possible to perform a rotation of the input image, here's an example w
 
 -  `.gitignore`
 
--  `project.py`
+-  `patches.py`
 
 -  `test_project.py`
 
@@ -60,7 +60,11 @@ The folder `images` contains the images used as input and some output examples. 
 
 Into `.gitignore` are contained all files we don't want to track.
 
-`project.py` is the main script for the project.
+`main.py` contains the settings, as the input image and angle of rotation
+
+`patches.py` contains functions to create hyperbolic patches
+
+`project.py` calls functions to run the project
 
 `test_project.py` is the script used for the testing.
 
