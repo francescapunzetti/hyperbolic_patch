@@ -1,8 +1,7 @@
-from project import hyperbolic_patch, rename, comparison, pad, pad_per_row, pad_per_col, centering, save_patch, reconstruct_image, main
+from patches import hyperbolic_patch, rename, comparison, pad, pad_per_row, pad_per_col, centering, save_patch, reconstruct_image
 import numpy as np
 from PIL import Image as Im 
 import glob
-from PIL import ImageOps as ImO
 from patchify import patchify
 
 #clear directory from any output of the program 
@@ -13,32 +12,6 @@ original_width = image.width
 step = 128 
 n_rows = original_width//step
 angle = 0.0
-
-def test_main1(monkeypatch):
-    """
-    GIVEN: inputs for all the conditional
-    WHEN: apply function main
-    THEN: it return the image with the inserted name 
-    """
-    area = "256, 256, 512, 512"
-    inputs = iter(['y', 'CMU.tiff', 'Page2', area])
-    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-    if __name__ == "__main__":
-        raise RuntimeError("Something is wrong")
-    (image, image_name) = main()
-    assert image_name == 'Page2'
-
-def test_main2(monkeypatch): 
-    """
-    GIVEN: inputs
-    WHEN: apply function main
-    THEN: it return the image with the inserted name 
-    """
-    area = "256, 256, 512, 512"
-    inputs = iter(['n', 'Page6', area])
-    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-    (image, image_name) = main()
-    assert image_name == "Page6"
 
 def test_save_patch():
     """
@@ -77,7 +50,7 @@ def test_hyperbolic_patch():
     THEN: test passes when the output are patches of the 
     original image that scale with the factor 1/(2**(n-1)) 
     """
-    hyperbolic_patch(image,  step=128, width= 128, height = 128)
+    hyperbolic_patch(image, image_name, angle, step=128, width= 128, height = 128)
     hyperbolic = glob.glob("hyperbolic*")
     for hyper in hyperbolic: 
         hyper = Im.open(hyper)
@@ -91,7 +64,7 @@ def test_rename():
     it's equal to the renamed ones, so all have been renamed
     """
     old_name = len(glob.glob("hyperbolic_corner*"))
-    rename()
+    rename(image_name, angle)
     new_name = glob.glob("images/hyperbolic_*")
     assert old_name == len(new_name)
 
@@ -168,11 +141,11 @@ def test_centering():
     given by the padding corresponding to the dim of the 
     test centered images.
     """
-    centering(step=128) 
+    centering(image, image_name, angle, step=128) 
     images_centering = glob.glob("images/hyperbolic_"+str(image_name)+"_"+str(angle)+ "_"+"patch_n°*")
     i = 1
-    for image in images_centering:
-        img = Im.open(image) 
+    for img in images_centering:
+        img = Im.open(img) 
         test = Im.open(f"images/test{i}.jpg")
         i = i +1 
         assert img.width == test.width
