@@ -271,7 +271,7 @@ def centering(
     This function adds a black padding in order to center the zoomed part 
     of the hyperbolic patches.
 
-    Paramenters
+    Parameters
     -----------------
     image = input image whose want to perform an hyperbolic compression.
     image_name = str with the name of the input image
